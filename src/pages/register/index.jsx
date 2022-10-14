@@ -1,8 +1,4 @@
-import React, { useState } from 'react';
-
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import React, { useContext, useState } from 'react';
 
 import { FormStyled } from '../../styles/form';
 import { ContainerStyled } from '../login/style';
@@ -10,61 +6,13 @@ import { ButtonsStyled } from '../../styles/buttons';
 
 import { AiFillEye } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
-import api from '../../services/api';
 
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-const schema = yup.object({
-  name: yup.string().required('Nome é obrigatório'),
-  email: yup
-    .string()
-    .email('Deve ser um e-mail válido')
-    .required('Email é obrigatório'),
-  password: yup
-    .string()
-    .matches(/[A-Z]/, 'Deve conter ao menos 1 letra maiúscula')
-    .matches(/[a-z]/, 'Deve conter ao menos 1 letra minuscula')
-    .matches(/(\d)/, 'Deve conter ao menos um número')
-    .matches(/(\W)|_/, 'Deve conter um caracter especial')
-    .matches(/.{8,}/, 'Deve ter no minimo 8 digitos')
-    .required('Senha é obrigatória'),
-  confirmPassword: yup
-    .string()
-    .oneOf(
-      [yup.ref('password')],
-      'Confirmação de senha deve ser igual a senha'
-    ),
-  bio: yup.string().required('Bio é obrigatório'),
-  contact: yup.string().required('Contato obrigatório'),
-  course_module: yup.string().required(),
-});
+import { UserContext } from '../../contexts/UserContext';
 
 const Register = () => {
-  const [typePass, setTypePass] = useState('password');
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
-
-  function registerUser(data) {
-    api
-      .post('/users', data)
-      .then((response) => {
-        console.log(response.data);
-        toast.success('Usuário cadastrado');
-      })
-      .catch((error) => {
-        console.error(error.response.data);
-        toast.error(error.response.data.message);
-      });
-    reset();
-  }
+  const { errors, registerUser, handleSubmit, register } =
+    useContext(UserContext);
 
   return (
     <ContainerStyled>

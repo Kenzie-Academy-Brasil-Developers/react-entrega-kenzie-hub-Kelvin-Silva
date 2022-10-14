@@ -4,16 +4,20 @@ import './App.css';
 import { GlobalStyle } from './styles/global';
 import { ToastContainer } from 'react-toastify';
 import Routes from './routes';
-import { ButtonsStyled } from './styles/buttons';
+import UserProvider from './contexts/UserContext';
+import TechProvider from './contexts/TechContext';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <div className='App'>
-      <ToastContainer />
+      <ToastContainer autoClose={1000} />
       <GlobalStyle />
-      <Routes />
+
+      <UserProvider>
+        <TechProvider>
+          <Routes />
+        </TechProvider>
+      </UserProvider>
     </div>
   );
 }

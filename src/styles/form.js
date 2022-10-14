@@ -80,7 +80,7 @@ export const FormStyled = styled.form`
   select {
     background: var(--grey-2);
 
-    border: 0.9772px solid transparent;
+    border: 1px solid transparent;
     border-radius: 3px;
 
     padding: 8px 13px;

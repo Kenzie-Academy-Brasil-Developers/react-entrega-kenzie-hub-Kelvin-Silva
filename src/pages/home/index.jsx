@@ -1,33 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../services/api';
+
 import { ButtonsStyled } from '../../styles/buttons';
+import { UserContext } from '../../contexts/UserContext';
 import { HomeStyled } from './style';
 
+import { MdOutlineAdd } from 'react-icons/md';
+import { BsFillTrashFill } from 'react-icons/bs';
+import AddModal from '../../components/AddModal';
+import api from '../../services/api';
+import { toast } from 'react-toastify';
+
 function Home() {
-  const [user, setUser] = useState(null);
+  const { user, techs, setTechs } = useContext(UserContext);
+  const [showModal, setShowModal] = useState(null);
 
   const navigate = useNavigate();
-
-  const token = localStorage.getItem('HubToken');
-  useEffect(() => {
-    async function loginUser() {
-      await api
-        .get('/profile')
-        .then((response) => {
-          setUser(response.data);
-        })
-        .catch((error) => console.error(error));
-    }
-    if (token) {
-      loginUser();
-    }
-  }, []);
 
   function logOut() {
     window.localStorage.clear();
 
     navigate('/login');
+  }
+
+  async function remove(idTech) {
+    try {
+      await api.delete(`/users/techs/${idTech}`);
+      toast.success('Tecnologia Apagada');
+
+      const techsFiltered = techs.filter((techs) => techs.id !== idTech);
+      setTechs(techsFiltered);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -48,15 +53,38 @@ function Home() {
           </header>
           <main>
             <div className='container'>
-              <p> Que pena! Estamos em desenvolvimento :(</p>
-              <span>
-                Nossa aplicação está em desenvolvimento, em breve teremos
-                novidades
-              </span>
+              <section>
+                <div>
+                  <h3>Tecnologias</h3>
+                  <button onClick={() => setShowModal(true)}>
+                    <MdOutlineAdd size={24} />
+                  </button>
+                </div>
+                <ul>
+                  {techs.length ? (
+                    techs.map((techs, index) => {
+                      return (
+                        <li key={index}>
+                          <h4>{techs.title}</h4>
+                          <div>
+                            <span>{techs.status}</span>
+                            <button onClick={() => remove(techs.id)}>
+                              <BsFillTrashFill color='white' size={13} />
+                            </button>
+                          </div>
+                        </li>
+                      );
+                    })
+                  ) : (
+                    <h4>Não há tecnologias</h4>
+                  )}
+                </ul>
+              </section>
             </div>
           </main>
         </HomeStyled>
       )}
+      {showModal && <AddModal setShowModal={setShowModal} />}
     </>
   );
 }
