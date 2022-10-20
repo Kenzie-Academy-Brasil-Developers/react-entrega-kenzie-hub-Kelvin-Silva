@@ -1,17 +1,85 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import {
+  FieldErrorsImpl,
+  FieldPathValues,
+  useForm,
+  UseFormHandleSubmit,
+  UseFormRegister,
+} from 'react-hook-form';
 import { toast } from 'react-toastify';
 import api from '../services/api';
 import { schemaRegister } from '../validations/registerUser';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { string } from 'yup';
 
-export const UserContext = createContext({});
+interface IUserContextProps {
+  children: ReactNode;
+}
 
-const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+export interface IDataLogin {
+  email: string;
+  password: string;
+}
+
+interface IDataRegister {
+  email: string;
+  password: string;
+  name: string;
+  bio: string;
+  contact: string;
+  course_module: string;
+}
+
+interface IUser {
+  id: string;
+  name: string;
+  email: string;
+  course_module: string;
+  bio: string;
+  contact: string;
+  techs: string[];
+  works: string[];
+  created_at: string;
+  updated_at: string;
+  avatar_url: string | null;
+}
+
+export interface ITechs {
+  title: string;
+  status: string;
+  id: string;
+}
+
+interface ISchemaRegister {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  bio: string;
+  contact: string;
+  course_module: string;
+}
+
+export interface IUserContext {
+  user: IUser | null;
+  setUser: React.Dispatch<React.SetStateAction<IUser | null>>;
+  techs: ITechs[];
+  setTechs: React.Dispatch<React.SetStateAction<ITechs[]>>;
+  registerUser: (data: IDataRegister) => Promise<void>;
+  handleSubmit: UseFormHandleSubmit<ISchemaRegister>;
+  register: UseFormRegister<any>;
+  errors: FieldErrorsImpl;
+  loginUser: (data: IDataLogin) => Promise<void>;
+  loading: boolean;
+}
+
+export const UserContext = createContext({} as IUserContext);
+
+const UserProvider = ({ children }: IUserContextProps) => {
+  const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [techs, setTechs] = useState([]);
+  const [techs, setTechs] = useState([] as ITechs[]);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,7 +105,7 @@ const UserProvider = ({ children }) => {
     loadUser();
   }, []);
 
-  async function loginUser(data) {
+  async function loginUser(data: IDataLogin) {
     try {
       localStorage.clear();
       const response = await api.post('/sessions', data);
@@ -56,7 +124,7 @@ const UserProvider = ({ children }) => {
       setTimeout(() => {
         navigate(toNavigate, { replace: true });
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
     }
@@ -67,11 +135,11 @@ const UserProvider = ({ children }) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<ISchemaRegister>({
     resolver: yupResolver(schemaRegister),
   });
 
-  async function registerUser(data) {
+  async function registerUser(data: IDataRegister) {
     api
       .post('/users', data)
       .then((response) => {
@@ -96,6 +164,7 @@ const UserProvider = ({ children }) => {
         loading,
         techs,
         setTechs,
+        setUser,
       }}
     >
       {children}
