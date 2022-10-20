@@ -2,25 +2,27 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useOutsideClick } from '../../hooks/useOutsideClick';
-import { TechContext } from '../../contexts/TechContext';
+import { ITechContext, TechContext } from '../../contexts/TechContext';
 import { ButtonsStyled } from '../../styles/buttons';
 import { FormStyled } from '../../styles/form';
 import { schemaAddTec } from '../../validations/registerUser';
 import { Modal } from './style';
+import { IShowModal } from '../../pages/home';
+import { ITechs } from '../../contexts/UserContext';
 
-const AddModal = ({ setShowModal }) => {
+const AddModal = ({ setShowModal }: IShowModal) => {
   const modalRef = useOutsideClick(() => {
-    setShowModal(null);
+    setShowModal(false);
   });
 
-  const { newTech } = useContext(TechContext);
+  const { newTech } = useContext<ITechContext>(TechContext);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<ITechs>({
     resolver: yupResolver(schemaAddTec),
   });
 
@@ -32,7 +34,7 @@ const AddModal = ({ setShowModal }) => {
             <h2>Cadastrar Tecnologia</h2>
             <button
               onClick={() => {
-                setShowModal(null);
+                setShowModal(false);
               }}
             >
               X
@@ -49,7 +51,7 @@ const AddModal = ({ setShowModal }) => {
             />
             <span className='error__name'>{errors.text?.message}</span>
             <label htmlFor='status'>Status</label>
-            <select name='' id='status' {...register('status')}>
+            <select id='status' {...register('status')}>
               <option value='Iniciante'>Iniciante</option>
               <option value='Intermediário'>Intermediário</option>
               <option value='Avançado'>Avançado</option>

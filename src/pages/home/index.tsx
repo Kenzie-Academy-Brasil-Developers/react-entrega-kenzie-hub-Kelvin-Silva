@@ -11,9 +11,14 @@ import AddModal from '../../components/AddModal';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
 
+export interface IShowModal {
+  showModal: boolean;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 function Home() {
   const { user, techs, setTechs } = useContext(UserContext);
-  const [showModal, setShowModal] = useState(null);
+  const [showModal, setShowModal] = useState<IShowModal | boolean>(false);
 
   const navigate = useNavigate();
 
@@ -23,7 +28,7 @@ function Home() {
     navigate('/login');
   }
 
-  async function remove(idTech) {
+  async function remove(idTech: string) {
     try {
       await api.delete(`/users/techs/${idTech}`);
       toast.success('Tecnologia Apagada');

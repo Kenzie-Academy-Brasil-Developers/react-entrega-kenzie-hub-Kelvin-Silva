@@ -85,11 +85,7 @@ const Register = () => {
         <span className='error__name'>{errors.contact?.message}</span>
 
         <label htmlFor='course_module'>Selecionar Módulo</label>
-        <select
-          name='course_module'
-          id='course_module'
-          {...register('course_module')}
-        >
+        <select id='course_module' {...register('course_module')}>
           <option value='Primeiro módulo (Introdução ao Frontend)'>
             Primeiro módulo (Introdução ao Frontend)
           </option>

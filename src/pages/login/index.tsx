@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 
 import { AiFillEye } from 'react-icons/ai';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,11 +10,10 @@ import { ButtonsStyled } from '../../styles/buttons';
 import { FormStyled } from '../../styles/form';
 import { ContainerStyled } from './style';
 
-
-
 import 'react-toastify/dist/ReactToastify.css';
-import { UserContext } from '../../contexts/UserContext';
+import { IDataLogin, UserContext } from '../../contexts/UserContext';
 import { schemaLogin } from '../../validations/registerUser';
+
 
 const Login = () => {
   const { loginUser } = useContext(UserContext);
@@ -25,32 +23,9 @@ const Login = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<IDataLogin>({
     resolver: yupResolver(schemaLogin),
   });
-
-  // const navigate = useNavigate();
-
-  // async function LoginUser(data) {
-  //   await api
-  //     .post('/sessions', data)
-  //     .then((response) => {
-  //       toast.success('Usuário logado');
-  //       console.log(response);
-  //       window.localStorage.clear();
-  //       window.localStorage.setItem('HubToken', response.data.token);
-  //       window.localStorage.setItem('HubId', response.data.user.id);
-
-  //       setTimeout(() => {
-  //         navigate('/home');
-  //       }, 2000);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error.response.data);
-  //       toast.error(error.response.data.message);
-  //     });
-  //   reset();
-  // }
 
   return (
     <ContainerStyled>
